@@ -14,18 +14,6 @@ def generate_report(report, server_cnt, html_id):
     return report
 
 
-is_ip_from_csv = True
-try:
-    with open('ip.csv', 'r', encoding='utf-8') as csv_file:
-        reader = csv.reader(csv_file)
-        csv_data = [ row[0] for row in reader ]
-        print("ip.csv found. "
-          "read ip list from ip.csv.\n")
-except FileNotFoundError:
-    print("ip.csv not found... "
-          "read ip list from config.yaml instead.\n")
-    is_ip_from_csv = False
-
 try:
     with open('config.yaml', 'r', encoding='utf-8') as stream:
         config = yaml.safe_load(stream)
@@ -33,6 +21,18 @@ except FileNotFoundError:
     input("ERROR! config.yaml not found!\n"
           "press Enter key to close this window...")
     exit()
+
+is_ip_from_csv = True
+try:
+    with open(config['CSV_FILE_NAME'], 'r', encoding='utf-8') as csv_file:
+        reader = csv.reader(csv_file)
+        csv_data = [row[0] for row in reader]
+        print("{csv_file_name} found. "
+              "read ip list from {csv_file_name}.\n".format(csv_file_name=config['CSV_FILE_NAME']))
+except FileNotFoundError:
+    print("{csv_file_name} not found... "
+          "read ip list from config.yaml instead.\n".format(csv_file_name=config['CSV_FILE_NAME']))
+    is_ip_from_csv = False
 
 requests.packages.urllib3.disable_warnings()
 
@@ -46,7 +46,8 @@ if ip_list == None and not is_ip_from_csv:
     input("press Enter key to close this window...")
     exit()
 elif len(ip_list) == 0 and is_ip_from_csv:
-    print("ERROR! ip.csv's content is empty... please check")
+    print("ERROR! {csv_file_name}'s content is empty... please check".format(
+        csv_file_name=config['CSV_FILE_NAME']))
     input("press Enter key to close this window...")
     exit()
 

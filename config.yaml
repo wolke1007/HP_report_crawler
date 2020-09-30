@@ -1,16 +1,17 @@
-#輸入IP列表
+# csv file name
+CSV_FILE_NAME: "ip.csv"
+
+# 輸入IP列表
 IP_LIST:
   - "192.168.2.126"
-  - "192.168.2.12"
-  - "192.168.2.126"
-  
-URL_PATTERN: 'https://{ip}/hp/device/InternalPages/Index?id=UsagePage'
+
+URL_PATTERN: "https://{ip}/hp/device/InternalPages/Index?id=UsagePage"
 TIMEOUT: 3
 
 HTML_ID:
-  IP 主機名稱: 'UsagePage.DeviceInformation.DeviceName'
-  IP 位址: 'HomeDeviceIp'
-  裝置機型: 'UsagePage.DeviceInformation.ProductName'
-  序號: 'UsagePage.DeviceInformation.DeviceSerialNumber'
-  等量印刷 單色總計: 'UsagePage.EquivalentImpressionsTable.Monochrome.Total'
-  等量印刷 彩色總計: 'UsagePage.EquivalentImpressionsTable.Color.Total'
+  IP 主機名稱: "UsagePage.DeviceInformation.DeviceName"
+  IP 位址: "HomeDeviceIp"
+  裝置機型: "UsagePage.DeviceInformation.ProductName"
+  序號: "UsagePage.DeviceInformation.DeviceSerialNumber"
+  等量印刷 單色總計: "UsagePage.EquivalentImpressionsTable.Monochrome.Total"
+  等量印刷 彩色總計: "UsagePage.EquivalentImpressionsTable.Color.Total"
