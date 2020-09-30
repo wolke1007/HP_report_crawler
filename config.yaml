@@ -3,7 +3,7 @@ CSV_FILE_NAME: "ip.csv"
 
 # 輸入IP列表
 IP_LIST:
-  - "192.168.2.126"
+  - 192.168.2.126
 
 URL_PATTERN: "https://{ip}/hp/device/InternalPages/Index?id=UsagePage"
 TIMEOUT: 3

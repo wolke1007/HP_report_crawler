@@ -26,7 +26,7 @@ is_ip_from_csv = True
 try:
     with open(config['CSV_FILE_NAME'], 'r', encoding='utf-8') as csv_file:
         reader = csv.reader(csv_file)
-        csv_data = [row[0] for row in reader]
+        csv_data = [row[0].strip() for row in reader]
         print("{csv_file_name} found. "
               "read ip list from {csv_file_name}.\n".format(csv_file_name=config['CSV_FILE_NAME']))
 except FileNotFoundError:
