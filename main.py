@@ -20,10 +20,10 @@ try:
         reader = csv.reader(csv_file)
         csv_data = [ row[0] for row in reader ]
         print("ip.csv found. "
-          "read ip list from ip.csv.\n\n\n")
+          "read ip list from ip.csv.\n")
 except FileNotFoundError:
     print("ip.csv not found... "
-          "read ip list from config.yaml instead.\n\n\n")
+          "read ip list from config.yaml instead.\n")
     is_ip_from_csv = False
 
 try:
@@ -40,6 +40,15 @@ report = {}
 server_cnt = 0
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 ip_list = csv_data if is_ip_from_csv else config['IP_LIST']
+
+if ip_list == None and not is_ip_from_csv:
+    print("ERROR! IP_LIST in config.yaml is empty... please check")
+    input("press Enter key to close this window...")
+    exit()
+elif len(ip_list) == 0 and is_ip_from_csv:
+    print("ERROR! ip.csv's content is empty... please check")
+    input("press Enter key to close this window...")
+    exit()
 
 for ip in ip_list:
     url = config['URL_PATTERN'].format(ip=ip)
