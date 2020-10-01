@@ -53,7 +53,10 @@ def get_reachable_servers(server_list):
 def generate_report(report, server_cnt, html_id):
     report[server_cnt] = {}
     for key in html_id.keys():
-        report[server_cnt][key] = soup.find(id=html_id.get(key)).text
+        try:
+            report[server_cnt][key] = soup.find(id=html_id.get(key)).text
+        except AttributeError:
+            report[server_cnt][key] = None  # 找不到該元素時於報告中填上 null
     return report
 
 
