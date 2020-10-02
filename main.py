@@ -39,7 +39,7 @@ def get_server_list_from_config():
 
 
 def get_server_list_from_csv():
-    print("{csv_file_name} found... "
+    print("{csv_file_name} found. "
           "ip list source : {csv_file_name}\n".format(csv_file_name=config['CSV_FILE_NAME']))
     try:
         with open(config['CSV_FILE_NAME'], 'r', encoding='utf-8') as csv_file:
@@ -106,6 +106,7 @@ for server in reachable_servers:
     ip = server.get('IP')
     page_type = server.get('TYPE')
     server_cnt += 1
+    print("server {server_cnt} is proccessing: ".format(server_cnt=server_cnt))
     pages.append((server_cnt, page_refactory.get_page_instance(page_type, ip)))
 result = {}
 for page in pages:
