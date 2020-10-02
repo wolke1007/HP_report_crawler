@@ -17,7 +17,6 @@ class Page(metaclass=abc.ABCMeta):
 
     def get_all_element_from_html(self):
         url = self.config['URL_PATTERN'].format(ip=self.ip)
-        print("fetching page.")
         try:
             resp = requests.get(url, verify=False, timeout=self.config['TIMEOUT'])
         except requests.exceptions.ConnectTimeout:
@@ -30,14 +29,12 @@ class Page(metaclass=abc.ABCMeta):
                     ip=ip, timeout=self.config['TIMEOUT']))
         resp.encoding = 'utf-8'
         soup = BeautifulSoup(resp.text, 'lxml')
-        print("crawling..")
         for key in self.config['PAGE'][self.page_type].keys():
             html_id = self.config['PAGE'][self.page_type].get(key)
             try:
                 self.crawler_result[key] = soup.find(id=html_id).text
             except AttributeError:
                 self.crawler_result[key] = None  # 找不到該元素時於報告中填上 null
-        print("collecting result...")
 
     def get_crawler_result(self):
         return self.crawler_result

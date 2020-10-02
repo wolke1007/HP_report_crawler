@@ -59,7 +59,7 @@ def get_server_list_from_csv():
     return server_list
 
 
-def pingme(i, queue: Queue):
+def pingme(thread, queue: Queue):
     while True:
         server = queue.get()
         ret = subprocess.Popen(
@@ -74,7 +74,6 @@ def pingme(i, queue: Queue):
 
 def get_reachable_servers(server_list: dict):
     print("=========== Start ping all servers ===========")
-    reachable_server_list = []
     queue = Queue()
     for thread in range(NUM_THREADS):
         new_thread = Thread(target=pingme, args=(thread, queue))
@@ -85,6 +84,26 @@ def get_reachable_servers(server_list: dict):
     queue.join()
     print("================= End of ping =================")
 
+
+def crwaling(thread, queue: Queue):
+    while True:
+        server = queue.get()
+        ip = server.get('IP')
+        page_type = server.get('TYPE')
+        print("server {ip} is proccessing... ".format(ip=ip))
+        page_refactory.get_page_instance(page_type, ip)
+        queue.task_done()
+
+def get_pages_content():
+    print("=========== Start crawling all pages ===========")
+    queue = Queue()
+    for thread in range(NUM_THREADS):
+        new_thread = Thread(target=pingme, args=(thread, queue))
+        new_thread.setDaemon(True)
+        new_thread.start()
+
+    
+    print("================= End of crawling =================")
 
 requests.packages.urllib3.disable_warnings()
 config = load_config()
@@ -103,14 +122,11 @@ get_reachable_servers(server_list)
 page_refactory = PageFactory(config)
 pages = []
 for server in reachable_servers:
-    ip = server.get('IP')
-    page_type = server.get('TYPE')
-    server_cnt += 1
-    print("server {server_cnt} is proccessing: ".format(server_cnt=server_cnt))
-    pages.append((server_cnt, page_refactory.get_page_instance(page_type, ip)))
+    get_page_content(server, pages)
+
 result = {}
-for page in pages:
-    result[page[0]] = page[1].get_crawler_result()
+for num, page in enumerate(pages, start=1):
+    result[num] = page.get_crawler_result()
 file_name = '{timestamp}_report.txt'.format(
     timestamp=timestamp)
 with open(file_name, 'w', encoding='utf-8') as stream:
