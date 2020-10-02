@@ -8,36 +8,70 @@ import csv
 import subprocess
 from threading import Thread
 from queue import Queue
+from page1 import Page1
+from default_page import DefaultPage
+from page_factory import PageFactory
 
 NUM_THREADS = 10
 
 
-def get_ip_list(is_ip_from_csv):
-    ip_list = csv_data if is_ip_from_csv else config['IP_LIST']
-    if ip_list == None and not is_ip_from_csv:
+def load_config():
+    # 讀取 config 檔
+    try:
+        with open('config.yaml', 'r', encoding='utf-8') as stream:
+            config = yaml.safe_load(stream)
+    except FileNotFoundError:
+        input("ERROR! config.yaml not found!\n"
+              "press Enter key to close this window...")
+        exit()
+    return config
+
+
+def get_server_list_from_config():
+    server_list = config['SERVER_LIST']
+    if server_list == None:
         print("ERROR! IP_LIST in config.yaml is empty... please check")
         input("press Enter key to close this window...")
         exit()
-    elif len(ip_list) == 0 and is_ip_from_csv:
+    return server_list
+
+
+def get_server_list_from_csv():
+    try:
+        with open(config['CSV_FILE_NAME'], 'r', encoding='utf-8') as csv_file:
+            reader = csv.reader(csv_file)
+            server_list = []
+            for row in reader:
+                server_list.append(
+                    {'IP': row[0].strip(),
+                     'TYPE': row[1].strip()})
+            print("{csv_file_name} found. "
+                  "read ip list from {csv_file_name}.\n".format(csv_file_name=config['CSV_FILE_NAME']))
+    except FileNotFoundError:
+        print("{csv_file_name} not found... "
+              "read ip list from config.yaml instead.\n".format(csv_file_name=config['CSV_FILE_NAME']))
+    if len(server_list.get('SERVER_LIST')) == 0:
         print("ERROR! {csv_file_name}'s content is empty... please check".format(
             csv_file_name=config['CSV_FILE_NAME']))
         input("press Enter key to close this window...")
         exit()
-    return ip_list
+    return server_list
 
-def pingme(i, queue):
+
+def pingme(i, queue: Queue):
     while True:
-        ip = queue.get()
+        server = queue.get()
         ret = subprocess.Popen(
-            "ping -n 1 " + ip, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            "ping -n 1 " + server.get('IP'), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         if b"Destination host unreachable." in ret.stdout.read():
-            print('ping fail, ', ip, ' is not reachable!')
+            print('ping fail, ', server.get('IP'), ' is not reachable!')
         else:
-            print(ip, 'is alive')
-            reachable_servers.append(ip)
+            print(server.get('IP'), 'is alive')
+            reachable_servers.append(server)
         queue.task_done()
 
-def get_reachable_servers(server_list):
+
+def get_reachable_servers(server_list: dict):
     print("=========== Start ping all servers ===========")
     reachable_server_list = []
     queue = Queue()
@@ -45,12 +79,13 @@ def get_reachable_servers(server_list):
         new_thread = Thread(target=pingme, args=(thread, queue))
         new_thread.setDaemon(True)
         new_thread.start()
-    for ip in server_list:
-        queue.put(ip)
+    for server in server_list:
+        queue.put(server)
     queue.join()
     print("================= End of ping =================")
 
-def generate_report(report, server_cnt, html_id):
+
+def generate_report(report: dict, server_cnt: int, html_id: dict):
     report[server_cnt] = {}
     for key in html_id.keys():
         try:
@@ -60,38 +95,29 @@ def generate_report(report, server_cnt, html_id):
     return report
 
 
-# 讀取 config 檔
-try:
-    with open('config.yaml', 'r', encoding='utf-8') as stream:
-        config = yaml.safe_load(stream)
-except FileNotFoundError:
-    input("ERROR! config.yaml not found!\n"
-          "press Enter key to close this window...")
-    exit()
-
-is_ip_from_csv = True
-try:
-    with open(config['CSV_FILE_NAME'], 'r', encoding='utf-8') as csv_file:
-        reader = csv.reader(csv_file)
-        csv_data = [row[0].strip() for row in reader]
-        print("{csv_file_name} found. "
-              "read ip list from {csv_file_name}.\n".format(csv_file_name=config['CSV_FILE_NAME']))
-except FileNotFoundError:
-    print("{csv_file_name} not found... "
-          "read ip list from config.yaml instead.\n".format(csv_file_name=config['CSV_FILE_NAME']))
-    is_ip_from_csv = False
-
 requests.packages.urllib3.disable_warnings()
-
+config = load_config()
 report = {}
 server_cnt = 0
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-ip_list = get_ip_list(is_ip_from_csv)
+is_ip_from_csv = True if os.path.isfile(
+    config['CSV_FILE_NAME']) is True else False
+if(is_ip_from_csv):
+    print("{csv_file_name} found... "
+          "ip list source : {csv_file_name}\n".format(csv_file_name=config['CSV_FILE_NAME']))
+    server_list = get_server_list_from_csv()
+else:
+    print("{csv_file_name} not found... "
+          "ip list source : config.yaml\n".format(csv_file_name=config['CSV_FILE_NAME']))
+    server_list = get_server_list_from_config()
 reachable_servers = []
 # 利用多線程同時 ping 多個 server，並將有 ping 到的加進 reachable_servers
-get_reachable_servers(ip_list)
+get_reachable_servers(server_list)
+page_refactory = PageFactory()
 
-for ip in reachable_servers:
+for server in reachable_servers:
+    ip = server.get('IP')
+    page_type = server.get('TYPE')
     url = config['URL_PATTERN'].format(ip=ip)
     server_cnt += 1
     print("start proccessing server {server_cnt}:".format(
@@ -114,7 +140,7 @@ for ip in reachable_servers:
     soup = BeautifulSoup(resp.text, 'lxml')
     print("..")
     report = generate_report(
-        report=report, server_cnt=server_cnt, html_id=config['HTML_ID'])
+        report=report, server_cnt=server_cnt, html_id=config.get('PAGE').get(page_type))
     print("...")
 
 

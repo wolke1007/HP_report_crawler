@@ -1,12 +1,24 @@
 # csv file name
-CSV_FILE_NAME: "ip.csv"
+CSV_FILE_NAME: ip.csv
 
 # 輸入IP列表
-IP_LIST:
-  - 192.168.2.126
+SERVER_LIST:
+  - IP: 192.168.2.126
+    TYPE: TYPE_1
+  - IP: 192.168.2.126
+    TYPE: TYPE_2
 
-URL_PATTERN: "https://{ip}/hp/device/InternalPages/Index?id=UsagePage"
+URL_PATTERN: https://{ip}/hp/device/InternalPages/Index?id=UsagePage
 TIMEOUT: 7
+
+PAGE:
+  TYPE_1:
+    主機名稱: "UsagePage.DeviceInformation.DeviceName"
+    IP 位址: "HomeDeviceIp"
+    裝置機型: "UsagePage.DeviceInformation.ProductName"
+    序號: "UsagePage.DeviceInformation.DeviceSerialNumber"
+    等量印刷 單色總計: "UsagePage.EquivalentImpressionsTable.Monochrome.Total"
+    等量印刷 彩色總計: "UsagePage.EquivalentImpressionsTable.Color.Total"
 
 HTML_ID:
   主機名稱: "UsagePage.DeviceInformation.DeviceName"
