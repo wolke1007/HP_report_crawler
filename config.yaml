@@ -19,11 +19,3 @@ PAGE:
     序號: "UsagePage.DeviceInformation.DeviceSerialNumber"
     等量印刷 單色總計: "UsagePage.EquivalentImpressionsTable.Monochrome.Total"
     等量印刷 彩色總計: "UsagePage.EquivalentImpressionsTable.Color.Total"
-
-HTML_ID:
-  主機名稱: "UsagePage.DeviceInformation.DeviceName"
-  IP 位址: "HomeDeviceIp"
-  裝置機型: "UsagePage.DeviceInformation.ProductName"
-  序號: "UsagePage.DeviceInformation.DeviceSerialNumber"
-  等量印刷 單色總計: "UsagePage.EquivalentImpressionsTable.Monochrome.Total"
-  等量印刷 彩色總計: "UsagePage.EquivalentImpressionsTable.Color.Total"
