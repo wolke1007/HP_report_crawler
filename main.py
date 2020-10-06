@@ -16,7 +16,6 @@ NUM_THREADS = 10
 
 
 def load_config():
-    # 讀取 config 檔
     try:
         with open('config.yaml', 'r', encoding='utf-8') as stream:
             config = yaml.safe_load(stream)
@@ -28,6 +27,7 @@ def load_config():
 
 
 def get_server_list_from_config():
+    # 從 config.yaml 檔中讀取 SERVER_LIST 的值
     print("{csv_file_name} not found... "
           "ip list source : config.yaml\n".format(csv_file_name=config['CSV_FILE_NAME']))
     server_list = config['SERVER_LIST']
@@ -39,6 +39,7 @@ def get_server_list_from_config():
 
 
 def get_server_list_from_csv():
+    # 從 config.yaml 中指定的 csv 檔中取資料
     print("{csv_file_name} found. "
           "ip list source : {csv_file_name}\n".format(csv_file_name=config['CSV_FILE_NAME']))
     try:
@@ -60,6 +61,7 @@ def get_server_list_from_csv():
 
 
 def pingme(i, queue: Queue):
+    # ping server 主要邏輯
     while True:
         server = queue.get()
         ret = subprocess.Popen(
@@ -73,6 +75,7 @@ def pingme(i, queue: Queue):
 
 
 def get_reachable_servers(server_list: dict):
+    # ping server 多執行緒部分的邏輯
     print("=========== Start ping all servers ===========")
     reachable_server_list = []
     queue = Queue()
