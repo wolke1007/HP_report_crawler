@@ -9,7 +9,7 @@ SERVER_LIST:
     TYPE: TYPE_2
 
 URL_PATTERN: https://{ip}/hp/device/InternalPages/Index?id=UsagePage
-TIMEOUT: 7
+TIMEOUT: 10
 
 PAGE:
   TYPE_1:

@@ -11,8 +11,9 @@ from threading import Thread
 from queue import Queue
 from page import Page
 from page_factory import PageFactory
+import time
 
-NUM_THREADS = 10
+NUM_THREADS = 5
 
 
 def load_config():
@@ -60,13 +61,14 @@ def get_server_list_from_csv():
     return server_list
 
 
-def pingme(i, queue: Queue):
+def pingme(thread, queue: Queue):
     # ping server 主要邏輯
     while True:
         server = queue.get()
+        ip = server.get('IP')
         ret = subprocess.Popen(
-            "ping -n 1 " + server.get('IP'), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        if b"Destination host unreachable." in ret.stdout.read():
+            ["ping.exe", ip.strip(), "-n", "2"], stdout=subprocess.PIPE).communicate()[0]
+        if b"unreachable" in ret:
             print('ping fail, ', server.get('IP'), ' is not reachable!')
         else:
             print(server.get('IP'), 'is alive')
@@ -74,10 +76,9 @@ def pingme(i, queue: Queue):
         queue.task_done()
 
 
-def get_reachable_servers(server_list: dict):
+def get_reachable_servers(server_list: list):
     # ping server 多執行緒部分的邏輯
     print("=========== Start ping all servers ===========")
-    reachable_server_list = []
     queue = Queue()
     for thread in range(NUM_THREADS):
         new_thread = Thread(target=pingme, args=(thread, queue))
@@ -87,6 +88,38 @@ def get_reachable_servers(server_list: dict):
         queue.put(server)
     queue.join()
     print("================= End of ping =================")
+
+
+def crwaling(thread, queue: Queue):
+    server = queue.get()
+    if (server):
+        page = server['page']
+        ip = server['server'].get('IP')
+        # page_type = server['server'].get('TYPE')
+        print("server {ip} is proccessing... ".format(ip=ip))
+        page.get_all_element_from_html()
+        pages.append(page)
+        queue.task_done()
+
+
+def get_pages_content(reachable_servers, page_factory, pages):
+    print("=========== Start crawling all pages ===========")
+    queue = Queue()
+    threads = []
+    for thread in range(NUM_THREADS):
+        new_thread = Thread(target=crwaling, args=(thread, queue))
+        new_thread.setDaemon(True)
+        new_thread.start()
+        threads.append(new_thread)
+    for server in reachable_servers:
+        page = page_factory.get_page_instance(server.get('TYPE'),
+                                              server.get('IP'))
+        queue.put({'server': server,
+                   'page_factory': page_factory,
+                   'page': page,
+                   'pages': pages})
+    queue.join()
+    print("================= End of crawling =================")
 
 
 requests.packages.urllib3.disable_warnings()
@@ -103,17 +136,12 @@ else:
 reachable_servers = []
 # 利用多線程同時 ping 多個 server，並將有 ping 到的加進 reachable_servers
 get_reachable_servers(server_list)
-page_refactory = PageFactory(config)
+page_factory = PageFactory(config)
 pages = []
-for server in reachable_servers:
-    ip = server.get('IP')
-    page_type = server.get('TYPE')
-    server_cnt += 1
-    print("server {server_cnt} is proccessing: ".format(server_cnt=server_cnt))
-    pages.append((server_cnt, page_refactory.get_page_instance(page_type, ip)))
+get_pages_content(reachable_servers, page_factory, pages)
 result = {}
-for page in pages:
-    result[page[0]] = page[1].get_crawler_result()
+for num, page in enumerate(pages, start=1):
+    result[num] = page.get_crawler_result()
 file_name = '{timestamp}_report.txt'.format(
     timestamp=timestamp)
 with open(file_name, 'w', encoding='utf-8') as stream:
