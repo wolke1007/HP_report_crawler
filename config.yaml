@@ -5,15 +5,16 @@ USING_CSV: True
 
 NUM_THREADS: 5
 
+URL_PATTERN: https://{ip}/hp/device/InternalPages/Index?id=UsagePage
+
+TIMEOUT: 10
+
 # 輸入IP列表
 SERVER_LIST:
   - IP: 192.168.2.126
     TYPE: TYPE_1
   - IP: 192.168.2.126
     TYPE: TYPE_2
-
-URL_PATTERN: https://{ip}/hp/device/InternalPages/Index?id=UsagePage
-TIMEOUT: 10
 
 PAGE:
   TYPE_1:
