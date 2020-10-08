@@ -12,8 +12,6 @@ from queue import Queue
 from page import Page
 import time
 
-NUM_THREADS = 5
-
 
 def load_config():
     """
@@ -142,14 +140,16 @@ def get_pages_content(reachable_servers: list, config, pages: list):
 
 
 if __name__ == '__main__':
-    requests.packages.urllib3.disable_warnings()
     config = load_config()
+    NUM_THREADS = config.get('NUM_THREADS')
+    is_using_csv = config.get('USING_CSV')
+    requests.packages.urllib3.disable_warnings()
     report = {}
     server_cnt = 0
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     is_ip_from_csv = True if os.path.isfile(
         config['CSV_FILE_NAME']) is True else False
-    if(is_ip_from_csv and config.get('USING_CSV')):
+    if(is_using_csv and is_ip_from_csv):
         server_list = get_server_list_from_csv()
     else:
         server_list = get_server_list_from_config()

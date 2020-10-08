@@ -3,6 +3,8 @@ CSV_FILE_NAME: ip.csv
 
 USING_CSV: True
 
+NUM_THREADS: 5
+
 # 輸入IP列表
 SERVER_LIST:
   - IP: 192.168.2.126
