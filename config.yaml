@@ -23,3 +23,9 @@ PAGE:
     序號: "UsagePage.DeviceInformation.DeviceSerialNumber"
     等量印刷 單色總計: "UsagePage.EquivalentImpressionsTable.Monochrome.Total"
     等量印刷 彩色總計: "UsagePage.EquivalentImpressionsTable.Color.Total"
+  TYPE_2:  # sample page type, can change either key name or value(html id)
+    # 舉個栗子: "Chestnut.SampleDiv.SampleId"
+    主機名稱: "UsagePage.DeviceInformation.DeviceName"
+    IP 位址: "HomeDeviceIp"
+    等量印刷 單色總計: "UsagePage.EquivalentImpressionsTable.Monochrome.Total"
+    等量印刷 彩色總計: "UsagePage.EquivalentImpressionsTable.Color.Total"
