@@ -20,3 +20,11 @@
 * HTML_ID  
   * 需要資訊的對應 HTML id 與報告中呈現的中文
   * 可視需求添增 key value(但目前只能用在目前寫死的那頁中)
+
+## 備註
+  * 使用 pyinstaller 產出 exe 檔
+  * 使用套件:
+    * bs4
+    * requests
+    * yaml
+    * csv
