@@ -27,6 +27,26 @@ def load_config():
     return config
 
 
+def validate_config(config):
+    """
+    檢查 config.yaml 各主要 key 是否健全沒缺失
+    """
+    keys_should_be_exist = [
+        'CSV_FILE_NAME',
+        'USING_CSV',
+        'NUM_THREADS',
+        'SERVER_LIST',
+        'URL_PATTERN',
+        'TIMEOUT',
+        'PAGE'
+    ]
+    for key in keys_should_be_exist:
+        if key not in config.keys():
+            print('please check key: {key} is exist in config.yaml'.format(key = key))
+            input("press Enter key to close this window...")
+            exit()
+    
+
 def get_server_list_from_config():
     """
     從 config.yaml 檔中讀取 SERVER_LIST 的值
@@ -141,6 +161,7 @@ def get_pages_content(reachable_servers: list, config, pages: list):
 
 if __name__ == '__main__':
     config = load_config()
+    validate_config(config)
     NUM_THREADS = config.get('NUM_THREADS')
     is_using_csv = config.get('USING_CSV')
     requests.packages.urllib3.disable_warnings()
