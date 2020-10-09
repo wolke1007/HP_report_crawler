@@ -55,7 +55,7 @@ def get_server_list_from_config():
           "ip list source : config.yaml\n".format(csv_file_name=config['CSV_FILE_NAME']))
     server_list = config['SERVER_LIST']
     if server_list == None:
-        print("[ERROR] IP_LIST in config.yaml is empty please check!")
+        print("[ERROR] SERVER_LIST in config.yaml is empty please check!")
         input("press Enter key to close this window...")
         exit(1)
     return server_list
@@ -80,7 +80,9 @@ def get_server_list_from_csv():
                     {'IP': row[0].strip(),  # 資料的第 0 個資料是 IP
                      'TYPE': row[1].strip()})  # 資料的第 1 個資料是 TYPE
     except FileNotFoundError:
-        print("BUG HERE! should not got here.")
+        print("[BUG] BUG IN get_server_list_from_csv()! should not got here.")
+        input("press Enter key to close this window...")
+        exit(1)
     if len(server_list) == 0:
         print("[ERROR] {csv_file_name}'s content is empty please check!".format(
             csv_file_name=config['CSV_FILE_NAME']))
@@ -130,7 +132,6 @@ def crwaling(thread, queue: Queue):
     if (server):
         page = server['page']
         ip = server['server'].get('IP')
-        # page_type = server['server'].get('TYPE')
         print("server {ip} is proccessing... ".format(ip=ip))
         page.get_all_element_from_html()
         pages.append(page)
@@ -178,8 +179,10 @@ if __name__ == '__main__':
     # 利用多線程同時 ping 多個 server，並將有 ping 到的加進 reachable_servers
     get_reachable_servers(server_list)
     pages = []
+    # 利用多線程同時爬多個 page，並將有爬到的頁面加進 pages
     get_pages_content(reachable_servers, config, pages)
     result = {}
+    # 從 page 實體中取出報告的部分
     for num, page in enumerate(pages, start=1):
         result[num] = page.get_crawler_result()
     file_name = '{timestamp}_report.txt'.format(
