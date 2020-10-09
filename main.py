@@ -130,14 +130,15 @@ def crwaling(thread, queue: Queue):
     """
     爬蟲主要邏輯在 page.get_all_element_from_html() 中實現
     """
-    server = queue.get()
-    if (server):
-        page = server['page']
-        ip = server['server'].get('IP')
-        print("server {ip} is proccessing... ".format(ip=ip))
-        page.get_all_element_from_html()
-        pages.append(page)
-        queue.task_done()
+    while True:
+        server = queue.get()
+        if (server):
+            page = server['page']
+            ip = server['server'].get('IP')
+            print("collecting data from server {ip}... ".format(ip=ip))
+            page.get_all_element_from_html()
+            pages.append(page)
+            queue.task_done()
 
 
 def get_pages_content(reachable_servers: list, config, pages: list):
@@ -193,6 +194,6 @@ if __name__ == '__main__':
         stream.write(yaml.dump(result, allow_unicode=True))
 
     input("\n===============================================================================\n"
-        "Report was been generated, please check file =====> {timestamp}_report.yaml"
+        "Report generated, please check file =====> {timestamp}_report.yaml"
         "\n===============================================================================\n"
         "press Enter key to close this window...".format(timestamp=timestamp))
