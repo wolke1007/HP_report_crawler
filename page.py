@@ -2,6 +2,7 @@
 
 import yaml
 import requests
+import os
 from bs4 import BeautifulSoup
 
 class Page():
@@ -43,7 +44,7 @@ class Page():
         except KeyError:
             print('KeyError! please check page type:"{key}" is exist in config.yaml'.format(key=key))
             input("press Enter key to close this window...")
-            exit()
+            os._exit(1)
 
     def get_crawler_result(self):
         """
