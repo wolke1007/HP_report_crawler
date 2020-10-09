@@ -5,6 +5,7 @@ import requests
 import os
 from bs4 import BeautifulSoup
 
+
 class Page():
 
     def __init__(self, config, page_type, ip):
@@ -20,29 +21,30 @@ class Page():
         """
         url = self.config['URL_PATTERN'].format(ip=self.ip)
         try:
-            resp = requests.get(url, verify=False, timeout=self.config['TIMEOUT'])
+            resp = requests.get(url, verify=False,
+                                timeout=self.config['TIMEOUT'])
             resp.encoding = 'utf-8'
             soup = BeautifulSoup(resp.text, 'lxml')
             for key in self.config['PAGE'][self.page_type].keys():
                 html_id = self.config['PAGE'][self.page_type].get(key)
-                try:
-                    self.crawler_result[key] = soup.find(id=html_id).text
-                except AttributeError:
-                    self.crawler_result[key] = None  # 找不到該元素時於報告中填上 null
+                self.crawler_result[key] = soup.find(id=html_id).text
+        except AttributeError:
+            self.crawler_result[key] = None  # 找不到該元素時於報告中填上 null
         except requests.exceptions.ConnectTimeout:
-            print("Read timed out! can't not get html content from {ip} after {timeout} seconds.\n"
-                "(maybe try to increase more time to wait)\n".format(
-                    ip=self.ip, timeout=self.config['TIMEOUT']))
+            print("[ERROR] Read timed out! can't not get html content from {ip} after {timeout} seconds.\n"
+                  "(maybe try to increase more time to wait)\n".format(
+                      ip=self.ip, timeout=self.config['TIMEOUT']))
         except requests.exceptions.ReadTimeout:
-            print("ConnectTimeout! can't not get html content from {ip} after {timeout} seconds.\n"
-                "(maybe try to increase more time to wait)\n".format(
-                    ip=self.ip, timeout=self.config['TIMEOUT']))    
+            print("[ERROR] ConnectTimeout! can't not get html content from {ip} after {timeout} seconds.\n"
+                  "(maybe try to increase more time to wait)\n".format(
+                      ip=self.ip, timeout=self.config['TIMEOUT']))
         except requests.exceptions.ConnectionError:
-            print("ConnectionError! can't not get html content from {ip}.\n"
-                "(this ip may not a HP printer server)\n".format(
-                    ip=self.ip, timeout=self.config['TIMEOUT']))
-        except KeyError:
-            print('KeyError! please check page type:"{key}" is exist in config.yaml'.format(key=key))
+            print("[ERROR] ConnectionError! can't not get html content from {ip}.\n"
+                  "(this ip may not a HP printer server)\n".format(
+                      ip=self.ip, timeout=self.config['TIMEOUT']))
+        except KeyError as errorMsg:
+            print('[ERROR] {errorMsg}! please check config.yaml'.format(
+                errorMsg=errorMsg))
             input("press Enter key to close this window...")
             os._exit(1)
 
@@ -63,4 +65,4 @@ class Page():
 
 
 if __name__ == '__main__':
-    exit()
+    exit(0)

@@ -6,6 +6,7 @@
 2. config.yaml 與 ip.csv 這兩個檔案必須與執行檔(exe)位於同一層
 3. config.yaml 這個檔案必須存在
 4. ip.csv 的存在則可有可無(沒有的話會從 config.yaml 中撈 IP_LIST)
+5. 因為爬蟲使用多執行緒執行，故報告中的順序與表格中主機的順序不會一致
 
 ## config.yaml
 

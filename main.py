@@ -21,9 +21,9 @@ def load_config():
         with open('config.yaml', 'r', encoding='utf-8') as stream:
             config = yaml.safe_load(stream)
     except FileNotFoundError:
-        input("ERROR! config.yaml not found!\n"
+        input("[ERROR] config.yaml not found!\n"
               "press Enter key to close this window...")
-        exit()
+        exit(1)
     return config
 
 
@@ -42,9 +42,9 @@ def validate_config(config):
     ]
     for key in keys_should_be_exist:
         if key not in config.keys():
-            print('please check key: {key} is exist in config.yaml'.format(key = key))
+            print('[ERROR] main key missing! please check key: {key} is exist in config.yaml'.format(key = key))
             input("press Enter key to close this window...")
-            exit()
+            exit(1)
     
 
 def get_server_list_from_config():
@@ -55,9 +55,9 @@ def get_server_list_from_config():
           "ip list source : config.yaml\n".format(csv_file_name=config['CSV_FILE_NAME']))
     server_list = config['SERVER_LIST']
     if server_list == None:
-        print("ERROR! IP_LIST in config.yaml is empty... please check")
+        print("[ERROR] IP_LIST in config.yaml is empty please check!")
         input("press Enter key to close this window...")
-        exit()
+        exit(1)
     return server_list
 
 
@@ -82,10 +82,10 @@ def get_server_list_from_csv():
     except FileNotFoundError:
         print("BUG HERE! should not got here.")
     if len(server_list) == 0:
-        print("ERROR! {csv_file_name}'s content is empty... please check".format(
+        print("[ERROR] {csv_file_name}'s content is empty please check!".format(
             csv_file_name=config['CSV_FILE_NAME']))
         input("press Enter key to close this window...")
-        exit()
+        exit(1)
     return server_list
 
 
