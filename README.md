@@ -31,9 +31,8 @@
   * 若 ip.csv 不存在則會讀這邊，算是提供另一種輸入方式的選擇
 * PAGE
   * TYPE
-    * 此為怕不同機種有不同的頁面而做的設計
-    * 可視需要資訊的對應 HTML id 與報告中呈現的中文
-    * 可視需求添增 key value
+    * 此為怕不同機種有不同的頁面而做的設計
+    * 可視需求添增報告中呈現的中文與對應的 HTML id(例: "舉個栗子": "Chestnut.SampleDiv.SampleId")  
 
 ## 備註
   * 使用 pyinstaller 產出 exe 檔
