@@ -76,6 +76,8 @@ def get_server_list_from_csv():
             reader = csv.reader(csv_file)
             server_list = []
             for row in reader:
+                if len(row) == 0:
+                    continue
                 server_list.append(
                     {'IP': row[0].strip(),  # 資料的第 0 個資料是 IP
                      'TYPE': row[1].strip()})  # 資料的第 1 個資料是 TYPE
