@@ -1,6 +1,14 @@
 # csv file name
 CSV_FILE_NAME: ip.csv
 
+USING_CSV: True
+
+NUM_THREADS: 5
+
+URL_PATTERN: https://{ip}/hp/device/InternalPages/Index?id=UsagePage
+
+TIMEOUT: 10
+
 # 輸入IP列表
 SERVER_LIST:
   - IP: 192.168.2.126
@@ -8,14 +16,17 @@ SERVER_LIST:
   - IP: 192.168.2.126
     TYPE: TYPE_2
 
-URL_PATTERN: https://{ip}/hp/device/InternalPages/Index?id=UsagePage
-TIMEOUT: 10
-
 PAGE:
   TYPE_1:
     主機名稱: "UsagePage.DeviceInformation.DeviceName"
     IP 位址: "HomeDeviceIp"
     裝置機型: "UsagePage.DeviceInformation.ProductName"
     序號: "UsagePage.DeviceInformation.DeviceSerialNumber"
+    等量印刷 單色總計: "UsagePage.EquivalentImpressionsTable.Monochrome.Total"
+    等量印刷 彩色總計: "UsagePage.EquivalentImpressionsTable.Color.Total"
+  TYPE_2:  # sample page type, can change either key name or value(html id)
+    # 舉個栗子: "Chestnut.SampleDiv.SampleId"
+    主機名稱: "UsagePage.DeviceInformation.DeviceName"
+    IP 位址: "HomeDeviceIp"
     等量印刷 單色總計: "UsagePage.EquivalentImpressionsTable.Monochrome.Total"
     等量印刷 彩色總計: "UsagePage.EquivalentImpressionsTable.Color.Total"
